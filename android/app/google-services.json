@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1098833826611",
+    "project_id": "gsoc-18fce",
+    "storage_bucket": "gsoc-18fce.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1098833826611:android:8ce4026d0dbdbd9fb02446",
+        "android_client_info": {
+          "package_name": "com.example.flutter_3"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAH5x34k5Kxdt_q1ZaoawpIeim-5nFQh-g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
