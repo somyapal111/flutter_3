@@ -10,14 +10,22 @@ class SignIn extends StatefulWidget {
 class _SignInState extends State<SignIn> {
   FirebaseAuth _auth = FirebaseAuth.instance;
 
-  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController phoneNumberController =
+      TextEditingController(text: "+91");
+
+  bool _isLoading = false; // Track loading state
 
   Future<void> signInWithPhone(BuildContext context, String phoneNumber) async {
+    setState(() {
+      _isLoading = true; // Set loading state to true
+    });
+
     try {
       await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
           await _auth.signInWithCredential(credential);
+          // ignore: use_build_context_synchronously
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -42,6 +50,10 @@ class _SignInState extends State<SignIn> {
       );
     } catch (e) {
       print("Error signing in with phone number: $e");
+    } finally {
+      setState(() {
+        _isLoading = false; // Reset loading state
+      });
     }
   }
 
@@ -124,9 +136,9 @@ class _SignInState extends State<SignIn> {
                       child: TextField(
                         controller: phoneNumberController,
                         keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                          hintText: "+91",
-                          hintStyle: const TextStyle(
+                        decoration: const InputDecoration(
+                          // phoneNumberController.text: "+91",
+                          hintStyle: TextStyle(
                             fontSize: 20,
                             color: Color.fromARGB(255, 44, 44, 44),
                             fontFamily: 'Tiro Devanagari Hindi',
@@ -147,16 +159,32 @@ class _SignInState extends State<SignIn> {
                     left: 80,
                     top: 443,
                     child: ElevatedButton(
-                      onPressed: () {
-                        String phoneNumber = phoneNumberController.text.trim();
-                        if (phoneNumber.isNotEmpty) {
-                          signInWithPhone(context, phoneNumber);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('Please enter a valid phone number'),
-                          ));
-                        }
-                      },
+                      onPressed: _isLoading // Check loading state
+                          ? null
+                          : () async {
+                              await FirebaseAuth.instance.verifyPhoneNumber(
+                                phoneNumber: '${phoneNumberController}',
+                                verificationCompleted:
+                                    (PhoneAuthCredential credential) {},
+                                verificationFailed:
+                                    (FirebaseAuthException e) {},
+                                codeSent: (String verificationId,
+                                    int? resendToken) {},
+                                codeAutoRetrievalTimeout:
+                                    (String verificationId) {},
+                              );
+                              String phoneNumber =
+                                  phoneNumberController.text.trim();
+                              if (phoneNumber.isNotEmpty) {
+                                signInWithPhone(context, phoneNumber);
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content:
+                                      Text('Please enter a valid phone number'),
+                                ));
+                              }
+                            },
                       style: ElevatedButton.styleFrom(
                         primary: const Color.fromARGB(255, 64, 112, 88),
                         padding:
@@ -165,16 +193,18 @@ class _SignInState extends State<SignIn> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text(
-                        'ओटीपी उत्पन्न करें',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontFamily: 'Tiro Devanagari Hindi',
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
+                      child: _isLoading
+                          ? CircularProgressIndicator() // Show indicator if loading
+                          : const Text(
+                              'ओटीपी उत्पन्न करें',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontFamily: 'Tiro Devanagari Hindi',
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
                     ),
                   ),
                   Positioned(

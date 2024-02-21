@@ -1,9 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_3/android_large.dart';
 import 'package:flutter_3/firebase_options.dart';
 import 'package:flutter_3/otp.dart';
+import 'package:flutter_3/sign-in.dart';
 import 'package:flutter_3/splash-screen.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,9 +19,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: 'Otp',
+        initialRoute: 'splashscreen',
         routes: {
-          'Otp': (context) => Otp(),
+          'splashscreen': (context) => splashscreen(),
         });
   }
 }
